@@ -7,20 +7,24 @@ import sys
 import time
 import requests
 from datetime import datetime
-import schedule
+
 #宣告帳號密碼 網址
 MoonshineCafeLoginPath = 'https://cafe.moonshine.tw/login'
-Executables_path = 'C:/Users/Humi/Desktop/Resource/Chrome-forTesting/chromedriver-win64/chromedriver.exe'
+Executables_path = 'C:/Users/MoonShine/Desktop/chromedriver-win64/chromedriver.exe'
 account_path = '//*[@id="__next"]/div[1]/main/div/section/form/div[1]/input'
 password_path = '//*[@id="__next"]/div[1]/main/div/section/form/div[2]/input'
 signin_Path = '//*[@id="__next"]/div[1]/main/div/section/form/button/span[1]'
 Sign_inError = '//*[@id="headlessui-dialog-panel-:r5:"]/div/button/span[1]'
-ClickTeaPath = '//*[@id="__next"]/div[1]/main/div/div/div/section/div/section[2]/a[2]/div'
+ClickTeaPath = '//*[@id="__next"]/div[1]/main/div/div/div/section/div/section/a[2]/div'
 accountInput = "paul52071000"
 passwordInput = "zxcv123"
-Tea_IcePath = '//*[@id="__next"]/div[1]/main/div/div/section/div[2]/div/div[3]/section/form/div/main/section[1]/div/label[1]/div'
-Tea_BuyButton = '//*[@id="__next"]/div[1]/main/div/div/section/div[2]/div/div[3]/section/form/footer/button[1]'
-ReserveButton = '//*[@id="__next"]/div[1]/nav/div/div[3]/a/div[2]/div'
+RealTimeOrder = '//*[@id="__next"]/div[1]/nav/div/div[2]/a/div[2]'
+Tea_IcePath = '//*[@id="__next"]/div[1]/main/div/div/section/div[2]/div/div[3]/section/form/div/main/section[1]/div/label[1]'
+Tea_BuyButton = '//*[@id="__next"]/div[1]/main/div/div/section/div[2]/section/form/footer/button[1]'
+ReserveButton = '//*[@id="__next"]/div[1]/nav/div/div[3]'
+LunchBeafButton = '//*[@id="__next"]/div[1]/main/div/div[1]/div/div/section/div/section[2]/a[1]/div'
+LunchBeafRice = '//*[@id="__next"]/div[1]/main/div/div[1]/div/section/div[2]/div/div[3]/section/form/div/main/section/div/label[1]/div'
+lunchBeafOrderButton = '//*[@id="__next"]/div[1]/main/div/div[1]/div/section/div[2]/div/div[3]/section/form/footer/button[1]'
 shopping_cart = '//*[@id="__next"]/div[1]/nav/div/div[4]/a'
 ConfirmCheckOut = '//*[@id="__next"]/div[1]/main/div/div/div/div/section[2]/div/div/button[1]'
 import pickle
@@ -44,11 +48,33 @@ def LogIn(WebBrowser,account,password):
 
     WebBrowser.find_element_by_xpath(signin_Path).click()
 #搶午餐
-def PilliageLunch():
+def PilliageLunch(WebBrowser):
+
+    WebDriverWait(WebBrowser, 3).until(
+        EC.element_to_be_clickable((By.XPATH, ReserveButton))
+    ).click()
+
+    WebDriverWait(WebBrowser, 3).until(
+        EC.element_to_be_clickable((By.XPATH, LunchBeafButton))
+    ).click()
+
+    WebDriverWait(WebBrowser, 3).until(
+        EC.element_to_be_clickable((By.XPATH, LunchBeafRice))
+    ).click()
+
+    WebDriverWait(WebBrowser, 3).until(
+        EC.element_to_be_clickable((By.XPATH, lunchBeafOrderButton))
+    ).click()
+
+
+
     return
 #搶早餐
 def PillageBreakFast(WebBrowser,ClickTeaPath,Tea_IcePath,Tea_BuyButton):
     try:
+        WebDriverWait(WebBrowser, 3).until(
+            EC.element_to_be_clickable((By.XPATH, RealTimeOrder))
+        ).click()
         WebDriverWait(WebBrowser, 3).until(
             EC.element_to_be_clickable((By.XPATH, ClickTeaPath))
         ).click()
@@ -93,11 +119,11 @@ def GetFood():
         #登入
         LogIn(chrome,accountInput,passwordInput)
         #測試用
-        WebDriverWait(chrome, 3).until(
-            EC.element_to_be_clickable((By.XPATH, Sign_inError))
-        ).click()
-        if current_time > target_time :
-            PillageBreakFast(chrome, ClickTeaPath, Tea_IcePath, Tea_BuyButton)
+       # WebDriverWait(chrome, 3).until(
+        ## ).click()
+   #     if current_time > target_time :
+        PillageBreakFast(chrome, ClickTeaPath, Tea_IcePath, Tea_BuyButton)
+        #PilliageLunch(chrome)
 
         #結帳
         CheckOut(chrome)
